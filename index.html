@@ -1,0 +1,330 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PA Lecture 10: A/B Testing &amp; Launch Recommendations — Pre-Read</title>
+<style>
+  :root{
+    --page:#F8FAFC; --card:#FFFFFF; --section:#F1F5F9;
+    --primary:#6366F1; --hover:#4338CA; --wash:#EEF2FF;
+    --blue:#0EA5E9; --growth:#10B981; --caution:#F59E0B; --alert:#EF4444; --secondary:#8B5CF6;
+    --h:#0F172A; --body:#1E293B; --muted:#64748B; --faint:#94A3B8;
+    --border:#E2E8F0; --border-strong:#CBD5E1;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--page); color:var(--body); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px; margin:0 auto; padding:0 20px 80px}
+  .hero{background:linear-gradient(135deg,var(--primary),var(--hover)); color:#fff;
+    border-radius:0 0 28px 28px; padding:48px 28px 40px; margin-bottom:32px;
+    box-shadow:0 12px 30px -12px rgba(99,102,241,.5)}
+  .hero-inner{max-width:860px; margin:0 auto}
+  .kicker{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; background:rgba(255,255,255,.18); padding:6px 12px; border-radius:999px; margin-bottom:16px}
+  .hero h1{margin:0 0 8px; font-size:clamp(26px,5vw,38px); font-weight:800; line-height:1.15}
+  .hero .sub{margin:0; font-size:clamp(15px,2.6vw,18px); opacity:.92; font-weight:400; max-width:640px}
+  .hero .meta{margin-top:20px; display:flex; flex-wrap:wrap; gap:10px}
+  .chip{font-size:12px; font-weight:600; background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.25); padding:6px 12px; border-radius:8px}
+  section{margin:0 0 36px}
+  .sec-label{display:flex; align-items:center; gap:10px; font-size:13px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--primary); margin:0 0 6px}
+  .sec-label::before{content:""; width:26px; height:3px; background:var(--primary); border-radius:2px}
+  h2.sec-title{margin:0 0 18px; font-size:clamp(20px,3.6vw,26px); font-weight:800; color:var(--h)}
+  .sec-intro{color:var(--muted); font-style:italic; margin:-8px 0 20px; font-size:15px}
+  .case{background:var(--card); border:1px solid var(--border); border-radius:20px;
+    overflow:hidden; box-shadow:0 8px 24px -14px rgba(15,23,42,.25)}
+  .case-top{background:#0F172A; color:#fff; padding:20px 24px; display:flex; align-items:center; gap:14px}
+  .case-badge{font-size:26px; line-height:1}
+  .case-top .cf{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#94A3B8; font-weight:700}
+  .case-top .ct{font-size:19px; font-weight:800; letter-spacing:.02em}
+  .case-top .dom{margin-left:auto; font-size:11px; font-weight:700; color:#c7d2fe;
+    background:rgba(99,102,241,.25); border:1px solid rgba(99,102,241,.5); padding:5px 10px; border-radius:8px}
+  .case-body{padding:24px}
+  .block-h{font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 8px}
+  .block-h.red{color:var(--alert)} .block-h.grn{color:var(--growth)}
+  .setup-p{margin:0 0 22px; font-size:15.5px; color:var(--body)}
+  .ev{list-style:none; padding:0; margin:0 0 22px}
+  .ev li{position:relative; padding:6px 0 6px 26px; font-size:14.5px; color:var(--body)}
+  .ev li::before{content:""; position:absolute; left:4px; top:14px; width:8px; height:8px;
+    background:var(--blue); border-radius:2px; transform:rotate(45deg)}
+  .mystery{background:var(--wash); border-left:4px solid var(--primary); border-radius:0 12px 12px 0;
+    padding:16px 18px; margin:0 0 22px; font-size:16px; font-weight:600; color:var(--hover); font-style:italic}
+  .moves{display:grid; gap:10px; margin-bottom:8px}
+  .move-hint{font-size:13px; color:var(--muted); font-style:italic; margin:0 0 12px}
+  .move{display:flex; align-items:flex-start; gap:12px; text-align:left; width:100%;
+    background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:14px 16px;
+    font:inherit; color:var(--body); cursor:pointer; transition:all .18s}
+  .move:hover{border-color:var(--primary); background:var(--wash); transform:translateY(-1px)}
+  .move-box{flex:none; width:20px; height:20px; border:2px solid var(--border-strong);
+    border-radius:6px; margin-top:1px; transition:all .18s; position:relative}
+  .move.chosen .move-box{background:var(--primary); border-color:var(--primary)}
+  .move.chosen .move-box::after{content:"\2713"; position:absolute; inset:0; color:#fff;
+    font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .move-label{font-size:14.5px; font-weight:500}
+  .move.chosen{border-color:var(--primary); background:var(--wash)}
+  .move.dim{opacity:.5}
+  .reveal{margin-top:14px; background:var(--section); border:1px dashed var(--border-strong);
+    border-radius:12px; padding:0 16px; max-height:0; overflow:hidden; transition:all .3s; opacity:0}
+  .reveal.show{max-height:240px; opacity:1; padding:14px 16px; margin-top:14px}
+  .reveal .rl{font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--secondary); margin:0 0 6px}
+  .reveal p{margin:0; font-size:14px; color:var(--body)}
+  .clue{margin-top:20px; border-radius:14px; overflow:hidden; border:1px solid var(--border)}
+  .clue-btn{width:100%; display:flex; align-items:center; gap:12px; background:var(--section);
+    border:none; padding:16px 18px; font:inherit; cursor:pointer; color:var(--muted); font-weight:700;
+    font-size:13px; letter-spacing:.06em; text-transform:uppercase; transition:background .18s}
+  .clue-btn:hover{background:#e6ebf2}
+  .clue-btn .lock{font-size:16px}
+  .clue-btn .hintr{margin-left:auto; font-size:11px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--faint)}
+  .clue-body{max-height:0; overflow:hidden; transition:max-height .35s; background:var(--wash)}
+  .clue-body.open{max-height:320px}
+  .clue-body-inner{padding:18px 20px}
+  .clue-body-inner p{margin:0 0 10px; font-size:14.5px; color:var(--hover); font-style:italic}
+  .clue-body-inner p:last-child{margin:0}
+  .mission{display:block; margin-top:12px; font-weight:700; font-style:normal; color:var(--hover)}
+  .topics{display:grid; gap:10px}
+  .topic{text-align:left; width:100%; background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:0; font:inherit; cursor:pointer; overflow:hidden; transition:border-color .18s}
+  .topic:hover{border-color:var(--border-strong)}
+  .topic[aria-expanded="true"]{border-color:var(--primary)}
+  .topic-head{display:flex; align-items:center; gap:14px; padding:16px 18px}
+  .topic-num{flex:none; font-size:13px; font-weight:800; color:var(--primary); background:var(--wash);
+    width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center}
+  .topic-name{font-size:15.5px; font-weight:700; color:var(--h); flex:1}
+  .chev{flex:none; font-size:22px; color:var(--primary); font-weight:400; transition:transform .22s; line-height:1}
+  .topic[aria-expanded="true"] .chev{transform:rotate(45deg)}
+  .topic-body{max-height:0; overflow:hidden; transition:max-height .28s}
+  .topic[aria-expanded="true"] .topic-body{max-height:260px}
+  .topic-body p{margin:0; padding:0 18px 18px 66px; font-size:14.5px; color:var(--body)}
+  .uses{display:grid; gap:12px}
+  .uc{display:flex; gap:14px; background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:16px 18px}
+  .uc-dot{flex:none; width:10px; height:10px; border-radius:50%; background:var(--growth); margin-top:7px}
+  .uc strong{display:block; color:var(--h); font-size:14.5px; margin-bottom:3px}
+  .uc span{font-size:14px; color:var(--body)}
+  .prereqs{display:grid; gap:0; background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden}
+  .pq{display:grid; grid-template-columns:200px 1fr; gap:0; border-bottom:1px solid var(--border)}
+  .pq:last-child{border-bottom:none}
+  .pq-t{padding:16px 18px; font-weight:700; font-size:14px; color:var(--h); background:var(--section)}
+  .pq-r{padding:16px 18px; font-size:14px; color:var(--body)}
+  @media(max-width:640px){.pq{grid-template-columns:1fr} .pq-t{border-bottom:1px solid var(--border)}}
+  .setup-card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:8px 20px 20px}
+  .setup-item{display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer}
+  .setup-item:last-child{border-bottom:none}
+  .setup-item input{position:absolute; opacity:0; width:0; height:0}
+  .chk{flex:none; width:24px; height:24px; border:2px solid var(--border-strong); border-radius:7px;
+    margin-top:1px; transition:all .18s; position:relative}
+  .setup-item input:checked + .chk{background:var(--growth); border-color:var(--growth)}
+  .setup-item input:checked + .chk::after{content:"\2713"; position:absolute; inset:0; color:#fff;
+    font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center}
+  .setup-text{font-size:14.5px; color:var(--body); transition:all .18s}
+  .setup-item input:checked ~ .setup-text{color:var(--faint); text-decoration:line-through}
+  .progress{margin:16px 0 4px; height:8px; background:var(--section); border-radius:99px; overflow:hidden}
+  .progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--growth),#34d399); border-radius:99px; transition:width .3s}
+  .progress-txt{font-size:13px; color:var(--muted); font-weight:600; text-align:right; margin-top:6px}
+  footer{text-align:center; color:var(--faint); font-size:12.5px; margin-top:48px; padding-top:24px; border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="kicker">Product Analytics · Pre-Read</span>
+      <h1>Lecture 10: A/B Testing &amp; Launch Recommendations</h1>
+      <p class="sub">The last two lectures gave you segments to target. Now answer the next question: you’ve built a feature — how do you PROVE it works before shipping?</p>
+      <div class="meta">
+        <span class="chip">🎯 4 sections · 1 case file</span>
+        <span class="chip">⏱ ~10 min before class</span>
+        <span class="chip">✅ Prereq: Customer Segmentation</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <section>
+      <p class="sec-label">Section 1</p>
+      <h2 class="sec-title">What’s Happening in This Lecture</h2>
+      <p class="sec-intro">Here’s a sneak peek at everything we cover today, and why each one is worth showing up for.</p>
+
+      <div class="case">
+        <div class="case-top">
+          <span class="case-badge">🕵️</span>
+          <div>
+            <div class="cf">The Analyst Files · Case #10</div>
+            <div class="ct">THE FEATURE VERDICT</div>
+          </div>
+          <span class="dom">Social Media</span>
+        </div>
+        <div class="case-body">
+          <p class="block-h">Setup</p>
+          <p class="setup-p">The design team is excited: “We want to let people add colored gradient backgrounds to their Facebook status updates — we think it’ll boost engagement. Can we just ship it to everyone?” Your answer is not yes or no — it’s “let’s find out, properly.”</p>
+
+          <p class="block-h">Evidence</p>
+          <ul class="ev"><li>“We think it’ll help” is a hypothesis, not a fact. Shipping to 100% on a hunch means if it backfires, it backfires on everyone.</li><li>An A/B test splits users into treatment (colored backgrounds) and control (no change) — the difference is the evidence.</li><li>Sample size, duration, and statistical significance are non-negotiable — not optional math.</li></ul>
+
+          <p class="block-h red">The Mystery</p>
+          <p class="mystery">The team could peek at results every day and stop the test the moment treatment looks ahead. Why is that dangerous?</p>
+
+          <p class="block-h grn">Make Your Move</p>
+          <p class="move-hint">Choose your first move before continuing. There’s no need to know the answer yet — tap an option to see why it’s worth considering.</p>
+          <div class="moves">
+        <button class="move" data-reveal="Early data is noisy. “Peeking” inflates the chance of declaring a false winner. The sample-size calculation exists precisely to prevent this.">
+  <span class="move-box" aria-hidden="true"></span>
+  <span class="move-label">A. It’s fine — stop early and ship the winner to save time.</span>
+</button>
+<button class="move" data-reveal="Exactly. The 16-day duration (80K users at 5K/day) is the evidence threshold, not a suggestion. Stopping early risks reacting to random noise instead of a real effect.">
+  <span class="move-box" aria-hidden="true"></span>
+  <span class="move-label">B. Early stopping violates the sample-size contract — the result won’t be statistically trustworthy.</span>
+</button>
+<button class="move" data-reveal="Cost isn’t the issue. The issue is statistical validity — a premature stop produces unreliable conclusions regardless of budget.">
+  <span class="move-box" aria-hidden="true"></span>
+  <span class="move-label">C. It wastes money — running longer is always cheaper.</span>
+</button>
+<button class="move" data-reveal="There’s no regulatory minimum. The duration comes from the math: baseline, minimum detectable effect, significance level, and power.">
+  <span class="move-box" aria-hidden="true"></span>
+  <span class="move-label">D. Regulators require a minimum test duration for all A/B tests.</span>
+</button>
+</div>
+          <div class="reveal" id="reveal">
+            <p class="rl">Why this move</p>
+            <p id="reveal-text"></p>
+          </div>
+
+          <div class="clue">
+            <button class="clue-btn" id="clue-btn">
+              <span class="lock">🔒</span><span>Clue Locked</span>
+              <span class="hintr">tap to unlock →</span>
+            </button>
+            <div class="clue-body" id="clue-body">
+              <div class="clue-body-inner">
+                <p>The full A/B testing flow: Clarify the Goal → Pick North Star + Guardrail Metrics → Hypotheses (H₀ / H₁) → Sample Size &amp; Duration → Run the Test → Watch for Pitfalls (Primacy, Novelty, Network Effect) → Launch Recommendation.</p><p>Your mission: come to class knowing the difference between a null and alternative hypothesis.</p>
+                <span class="mission">🎯 Your mission: come to class with a first move in mind.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-label" style="margin-top:8px">Topic Preview</p>
+      <h2 class="sec-title">What You’ll Learn</h2>
+      <p class="sec-intro">Tap any topic to see what it covers and why it matters.</p>
+      <div class="topics">
+        <button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">01</span><span class="topic-name">Judgment Criteria &amp; General Framework</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>The structured approach for business-acumen testing questions — experiment design, hypothesis, sample size, duration, pitfalls, and recommendation.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">02</span><span class="topic-name">Facebook Case Study — Clarify the Goal</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>The same clarify-first instinct from RCA and guesstimates, now applied to experiment design. Pin the objective before touching a metric.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">03</span><span class="topic-name">Metrics: North Star, Supporting &amp; Guardrail</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>User engagement (% active users engaging) as North Star, DAU as supporting, and % media content as guardrail — the three-tier metric architecture.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">04</span><span class="topic-name">Experiment Design</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>Null/Alternative hypotheses, Z-proportions test, sample size calculation (baseline 45%, MDE 1%, 95% significance, 80% power), and duration = 80K ÷ 5K/day = 16 days.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">05</span><span class="topic-name">Testing Pitfalls</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>Primacy Effect (resistance to change inflates early negatives), Novelty Effect (excitement inflates early positives), and how both distort short-run results.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">06</span><span class="topic-name">Network Effect &amp; Group Interference</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>When treatment spills over to control (friends see colored statuses and post more), the measured difference underestimates the true effect.</p></div>
+</button>
+<button class="topic" aria-expanded="false">
+  <div class="topic-head"><span class="topic-num">07</span><span class="topic-name">Launch Recommendations</span><span class="chev">+</span></div>
+  <div class="topic-body"><p>Translating statistical results into a business decision — linking lift to revenue, handling conflicting metrics, and weighing short-term vs. long-term impact.</p></div>
+</button>
+</div>
+    </section>
+
+    <section>
+      <p class="sec-label">Section 2</p>
+      <h2 class="sec-title">Real-World Use Cases</h2>
+      <div class="uses"><div class="uc"><div class="uc-dot"></div><div><strong>Feature launches at scale</strong><span>Every major tech company (Meta, Google, Netflix) A/B tests features before full rollout — the framework from this lecture is universal.</span></div></div>
+<div class="uc"><div class="uc-dot"></div><div><strong>E-commerce conversion optimization</strong><span>Testing checkout-button colors, page layouts, and recommendation algorithms — all follow the same hypothesis → test → measure → decide flow.</span></div></div>
+<div class="uc"><div class="uc-dot"></div><div><strong>Interview A/B testing questions</strong><span>Product analyst interviews frequently ask you to design an experiment end-to-end. This lecture gives you the exact structure interviewers expect.</span></div></div>
+<div class="uc"><div class="uc-dot"></div><div><strong>Avoiding false positives</strong><span>Understanding why peeking, novelty effects, and network spillover create misleading results — and how to guard against each.</span></div></div>
+</div>
+    </section>
+
+    <section>
+      <p class="sec-label">Section 3</p>
+      <h2 class="sec-title">Prerequisites to Refresh</h2>
+      <p class="sec-intro">Make sure these concepts are fresh — A/B Testing builds on the metric and segmentation foundations from earlier lectures.</p>
+      <div class="prereqs"><div class="pq"><div class="pq-t">North Star &amp; Guardrail metrics</div><div class="pq-r">From L1’s AAAERR framework — the North Star is what you’re trying to move; the guardrail is what must not degrade.</div></div>
+<div class="pq"><div class="pq-t">Clarify-first instinct</div><div class="pq-r">From RCA and guesstimates — pin the goal, scope, and definitions before designing the experiment.</div></div>
+<div class="pq"><div class="pq-t">Customer segmentation</div><div class="pq-r">From L8–9 — you might not run the test on all users. Choosing the right segment (not Hibernating users who barely open the app) matters.</div></div>
+<div class="pq"><div class="pq-t">Basic statistics</div><div class="pq-r">Null hypothesis, alternative hypothesis, significance level (p-value), and statistical power — refreshing these will help with the sample-size calculation.</div></div>
+</div>
+    </section>
+
+    <section>
+      <p class="sec-label">Section 4</p>
+      <h2 class="sec-title">Before Class: Environment Setup</h2>
+      <p class="sec-intro">A conceptual + case-study lecture — bring your analytical reasoning.</p>
+      <div class="setup-card">
+        <label class="setup-item"><input type="checkbox"><span class="chk"></span><span class="setup-text">Review null vs. alternative hypothesis — you’ll set these up for the Facebook experiment.</span></label><label class="setup-item"><input type="checkbox"><span class="chk"></span><span class="setup-text">Know what statistical significance (95%) and power (80%) mean in plain English.</span></label><label class="setup-item"><input type="checkbox"><span class="chk"></span><span class="setup-text">Recall North Star vs. Guardrail metrics from Lecture 1 — you’ll define both for the case study.</span></label>
+        <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+        <div class="progress-txt" id="ptxt">0 of 3 done</div>
+      </div>
+    </section>
+
+    <footer>Scaler · Product Analytics Module · Lecture 10 Pre-Read</footer>
+  </div>
+
+<script>
+  // Make Your Move
+  var moves = Array.prototype.slice.call(document.querySelectorAll('.move'));
+  var reveal = document.getElementById('reveal');
+  var revealText = document.getElementById('reveal-text');
+  moves.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      moves.forEach(function(m){ m.classList.remove('chosen'); m.classList.add('dim'); });
+      btn.classList.add('chosen'); btn.classList.remove('dim');
+      revealText.textContent = btn.getAttribute('data-reveal');
+      reveal.classList.add('show');
+    });
+  });
+
+  // Locked clue
+  var cbtn = document.getElementById('clue-btn');
+  var cbody = document.getElementById('clue-body');
+  cbtn.addEventListener('click', function(){
+    var open = cbody.classList.toggle('open');
+    cbtn.querySelector('.lock').textContent = open ? '🔓' : '🔒';
+    cbtn.querySelector('span:nth-child(2)').textContent = open ? 'Clue Unlocked' : 'Clue Locked';
+    cbtn.querySelector('.hintr').textContent = open ? '' : 'tap to unlock →';
+  });
+
+  // Topics accordion
+  document.querySelectorAll('.topic').forEach(function(t){
+    t.addEventListener('click', function(){
+      var open = t.getAttribute('aria-expanded') === 'true';
+      t.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+
+  // Setup progress
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.setup-item input'));
+  var pbar = document.getElementById('pbar');
+  var ptxt = document.getElementById('ptxt');
+  function upd(){
+    var done = boxes.filter(function(b){return b.checked;}).length;
+    pbar.style.width = (done/boxes.length*100) + '%';
+    ptxt.textContent = done + ' of ' + boxes.length + ' done';
+  }
+  boxes.forEach(function(b){ b.addEventListener('change', upd); });
+</script>
+</body>
+</html>
+</body></html>
